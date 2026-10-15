@@ -2,13 +2,6 @@
 
 BURHAN answers questions about the twelve supplied government services using the organizer-provided `command-r7b-arabic:7b` model through a local Ollama instance.
 
-## Requirements
-
-- Python 3.9 or later. No additional Python packages are needed.
-- Ollama running locally, with `command-r7b-arabic:7b` already installed.
-- The twelve original `.txt` service documents in `data/`.
-- Internet access is not needed for inference.
-
 ## Evaluator command
 
 From this folder, place the organizer's `questions.json` next to `main.py` and run:
