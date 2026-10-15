@@ -1,136 +1,84 @@
 # BURHAN
 ### Offline Evidence-Grounded Government Services Assistant
 
-BURHAN is an offline, evidence-grounded AI assistant designed to provide accurate and reliable information about government services. It uses the **Command R7B Arabic** language model through Ollama to interpret natural language questions, retrieve relevant information from official documentation, and generate answers supported by verifiable source excerpts.
+BURHAN is an offline AI-powered assistant designed to answer questions about government services using official documentation. It combines structured information retrieval with the **Command R7B Arabic (7B)** language model, running locally through Ollama, to deliver accurate, context-aware, and evidence-supported responses.
 
-The system focuses on factual accuracy, document relevance, Arabic language understanding, and conversational continuity while operating entirely on local hardware.
+Developed for the **AI Future 26 Hackathon at 42 Irbid**, BURHAN prioritizes factual correctness, source reliability, and efficient local inference.
 
-## Overview
+## Key Features
 
-Government service documentation often contains complex procedures, eligibility conditions, varying fees, and exceptions. Finding accurate answers can require navigating multiple documents and interpreting details specific to an individual's circumstances.
+- **Evidence-Grounded Responses:** Generates answers using retrieved information from official service documents, with supporting source excerpts.
+- **Intelligent Service Retrieval:** Identifies the relevant service and operation to prevent confusion between similar government procedures.
+- **Contextual Reasoning:** Handles conditional fees, eligibility requirements, exceptions, and complex service procedures.
+- **Arabic Language Understanding:** Supports formal Arabic, Jordanian dialect, and common linguistic variations.
+- **Multi-Turn Conversations:** Maintains context across related questions while keeping individual conversations independent.
+- **Hallucination Mitigation:** Uses document-grounded generation and citation validation to reduce unsupported answers.
+- **Offline Processing:** Runs locally without external AI APIs or internet connectivity during inference.
+- **Efficient Execution:** Uses focused context selection to reduce unnecessary model processing.
 
-BURHAN addresses these challenges through a lightweight retrieval-augmented generation (RAG) architecture that combines structured document retrieval with local language model inference.
+## Supported Services
 
-The knowledge base contains **12 government services** across three categories:
+BURHAN processes 12 official government service documents across three categories:
 
-- Passports
-- Family Books
-- Smart Identity Cards
-
-Each category includes first-time issuance, renewal, lost document replacement, and damaged document replacement.
-
-## Core Features
-
-**Evidence-Grounded Answers**
-
-Responses are generated using relevant excerpts retrieved from the supplied documentation. Supporting source contexts are included alongside each answer.
-
-**Service-Aware Retrieval**
-
-Identifies the relevant government service and operation, distinguishing between similar procedures to reduce incorrect document selection.
-
-**Contextual Reasoning**
-
-Handles conditional fees, eligibility requirements, supporting documents, exceptions, and information distributed across multiple document sections.
-
-**Arabic Language Understanding**
-
-Supports formal Arabic, Jordanian dialect, common expressions, and variations in how users describe government services.
-
-**Multi-Turn Conversations**
-
-Maintains conversational context across related questions while isolating independent chat sessions.
-
-**Uncertainty Handling**
-
-Distinguishes between supported information, ambiguous requests, and questions outside the available knowledge base.
-
-**Offline Execution**
-
-Operates through a local Ollama instance without requiring cloud inference services, external APIs, or internet connectivity during execution.
+| Service Category | Supported Operations |
+|---|---|
+| Passport | First Issuance, Renewal, Lost, Damaged |
+| Family Book | First Issuance, Renewal, Lost, Damaged |
+| Smart ID Card | First Issuance, Renewal, Lost, Damaged |
 
 ## System Architecture
 
-```mermaid
-flowchart TD
-    A["User Questions"] --> B["Service and Intent Detection"]
-    B --> C["Structured Document Retrieval"]
-    D["Official Service Documents"] --> C
-    C --> E["Relevant Evidence Selection"]
-    E --> F["Command R7B Arabic via Ollama"]
-    F --> G["Citation and Response Validation"]
-    G --> H["Generated Answers and Source Contexts"]
-    H --> I["answers.json"]
-```
+The system follows a lightweight Retrieval-Augmented Generation (RAG) approach:
 
-### Processing Pipeline
+**Question Input → Service Identification → Evidence Retrieval → Local LLM Inference → Response Validation → JSON Output**
 
-1. **Document Processing:** Parses the nine structured sections of each service document.
-2. **Intent Identification:** Determines the requested service, operation, and information type.
-3. **Evidence Retrieval:** Selects relevant passages, including applicable conditions and exceptions.
-4. **Answer Generation:** Sends the question and retrieved evidence to the local language model.
-5. **Response Validation:** Checks returned evidence identifiers and prepares supporting contexts.
-6. **Output Generation:** Produces structured JSON responses while preserving conversation history and input identifiers.
+The processing pipeline consists of:
 
-The system does not require model fine-tuning or a separate vector database.
+1. **Document Parsing:** Extracts structured information from the local service documents.
+2. **Intent Recognition:** Identifies the requested service, operation, and relevant question category.
+3. **Evidence Selection:** Retrieves supporting passages, including applicable conditions and exceptions.
+4. **Answer Generation:** Uses Command R7B Arabic through Ollama to produce a grounded response.
+5. **Output Validation:** Processes source references and preserves the required conversation structure.
 
 ## Technology Stack
 
 | Component | Technology |
 |---|---|
-| Language | Python |
+| Programming Language | Python |
 | Language Model | Command R7B Arabic 7B |
-| Inference Runtime | Ollama |
-| Retrieval | Service-aware structured retrieval |
-| Knowledge Base | Local text documents |
-| Interface | Command-line batch processing |
+| Model Runtime | Ollama |
+| Retrieval | Structured, Service-Aware Retrieval |
+| Knowledge Source | Local Text Documents |
+| Interface | Command-Line Processing |
 | Output Format | UTF-8 JSON |
-| External Python Dependencies | None |
 
 ## Project Structure
 
 ```text
 BURHAN/
-├── main.py
-├── data/
-│   └── 12 government service documents
-├── examples/
-│   ├── questions_sample.json
-│   └── answers_example.json
-├── scripts/
-│   ├── check_output.py
-│   └── audit_contexts.py
-├── README.md
-├── JUDGE_DEMO.md
-└── SUBMISSION_CHECKLIST.md
+├── data/           # Official government service documents
+├── scripts/        # Validation and utility scripts
+├── main.py         # Application entry point
+└── README.md       # Project documentation
 ```
 
-## Execution
+## Getting Started
 
-BURHAN uses a standardized batch-processing interface compatible with the evaluation requirements.
+### Prerequisites
 
-**Required model:** `command-r7b-arabic:7b`
+- Python 3.11 or newer
+- Ollama installed and running
+- Command R7B Arabic model downloaded locally
+
+### Model Installation
 
 ```powershell
 ollama pull command-r7b-arabic:7b
 ```
 
-**Application execution:**
-
-```powershell
-python main.py questions.json
-```
-
-The application processes every conversation and writes the results to `answers.json` in the project directory.
-
-Each message retains its original identifiers and question while receiving two additional fields:
-
-- `answer`: The generated response.
-- `contexts`: Source excerpts supporting the response.
-
 ### Configuration
 
-Optional environment variables control inference parameters:
+Optional environment variables can be used to configure inference:
 
 ```powershell
 $env:OLLAMA_MODEL = "command-r7b-arabic:7b"
@@ -138,49 +86,43 @@ $env:BURHAN_NUM_CTX = "6144"
 $env:BURHAN_MAX_TOKENS = "500"
 ```
 
-## Evaluation and Testing
+### Running BURHAN
 
-BURHAN supports local testing through the supplied sample questions and validation utilities.
+Place the input `questions.json` in the project root and execute:
+
+```powershell
+python main.py questions.json
+```
+
+BURHAN processes the questions and generates `answers.json` in the same directory.
+
+The output preserves the original chat structure and includes:
+
+- **answer:** Model-generated response to the question.
+- **contexts:** Retrieved document excerpts supporting the generated answer.
+
+### Document Inspection
 
 ```powershell
 python main.py --inspect
-python main.py examples/questions_sample.json
-python scripts/check_output.py examples/questions_sample.json answers.json
-python scripts/audit_contexts.py examples/questions_sample.json answers.json
 ```
 
-The evaluation focuses on:
-
-- Factual correctness and conditional reasoning
-- Accurate retrieval of supporting information
-- Consistency between answers and source contexts
-- Conversational context retention
-- Appropriate handling of ambiguous and unsupported questions
-- Reliable execution and valid JSON output
-
-Automated structural and citation checks supplement factual evaluation but do not guarantee semantic correctness.
+This command displays the recognized government services and parsed document sections.
 
 ## Design Principles
 
-BURHAN follows four core principles:
+BURHAN is built around four fundamental principles:
 
-1. **Accuracy First:** Prioritize correct, context-specific information over unnecessarily detailed responses.
-2. **Evidence Over Assumptions:** Ground responses in the supplied documentation rather than unsupported model knowledge.
-3. **Efficiency by Design:** Retrieve focused evidence instead of processing the entire knowledge base for every question.
-4. **Local and Reproducible:** Maintain a lightweight, self-contained architecture with deterministic document processing and locally executed inference.
-
-## Documentation
-
-Additional project documentation is available in:
-
-- [`JUDGE_DEMO.md`](JUDGE_DEMO.md): System demonstration and evaluation workflow.
-- [`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md): Deployment readiness and submission verification.
+1. **Accuracy:** Prioritize correct information and context-specific reasoning.
+2. **Transparency:** Associate generated answers with relevant source evidence.
+3. **Efficiency:** Minimize unnecessary processing through focused information retrieval.
+4. **Privacy:** Execute inference locally without transmitting document contents to external AI services.
 
 ## Project Scope
 
-BURHAN is a document-grounded information assistant developed for the **AI Future 26 Hackathon at 42 Irbid**.
+BURHAN demonstrates how lightweight language models and evidence-based retrieval can improve access to complex government-service information.
 
-It uses the supplied government service documentation as its knowledge source. The system is intended to demonstrate reliable retrieval and AI-assisted question answering, not to replace official government authorities or independently verify the current validity of administrative policies.
+The application uses only the provided government documents as its knowledge source and generates answers at runtime without fine-tuning or prewritten responses.
 
 ---
 
